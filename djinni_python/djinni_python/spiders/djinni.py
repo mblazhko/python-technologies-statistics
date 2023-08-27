@@ -57,7 +57,7 @@ class DjinniSpider(scrapy.Spider):
 
     def parse_one_job(self, response):
         title = response.css("h1::text").get().strip()
-        required_experience =response.css(
+        required_experience = response.css(
                 '.job-additional-info--body '
                 '.job-additional-info--item '
                 '.job-additional-info--item-text:contains("experience")::text'
@@ -66,10 +66,16 @@ class DjinniSpider(scrapy.Spider):
                 '.job-additional-info--item-text span.text-gray-600::text'
             ).getall()
         salary = response.css(".public-salary-item::text").get()
+        english_level = response.css(
+                '.job-additional-info--body '
+                '.job-additional-info--item '
+                '.job-additional-info--item-text:contains("English")::text'
+                ).get().strip().split()[1]
 
         yield {
             "title": title,
             "required-experience": required_experience,
             "technologies": technologies,
-            "salary": salary.replace('$', '') if salary else None
+            "salary": salary.replace('$', '') if salary else None,
+            "english-level": english_level if english_level else None
         }
