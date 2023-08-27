@@ -49,17 +49,24 @@ class DjinniSpider(scrapy.Spider):
                 detailed_url, callback=self.parse_one_job
             )
 
+        next_page = response.css('ul.pagination li.page-item:last-child a.page-link::attr(href)').get()
+
+        if next_page is not None:
+            next_page_url = urljoin(response.url, next_page)
+            yield scrapy.Request(next_page_url, callback=self.parse)
+
     def parse_one_job(self, response):
-        yield {
-            "title": response.css(
-                "h1::text"
-            ).get().strip(),
-            "required-experience": response.css(
+        title = response.css("h1::text").get().strip()
+        required_experience =response.css(
                 '.job-additional-info--body '
                 '.job-additional-info--item '
                 '.job-additional-info--item-text:contains("experience")::text'
-                ).get().strip(),
-            "technologies": response.css(
+                ).get().strip()
+        technologies = response.css(
                 '.job-additional-info--item-text span.text-gray-600::text'
-            ).getall(),
+            ).getall()
+        yield {
+            "title": title,
+            "required-experience": required_experience,
+            "technologies": technologies,
         }
