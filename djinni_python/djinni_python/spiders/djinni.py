@@ -65,8 +65,11 @@ class DjinniSpider(scrapy.Spider):
         technologies = response.css(
                 '.job-additional-info--item-text span.text-gray-600::text'
             ).getall()
+        salary = response.css(".public-salary-item::text").get()
+
         yield {
             "title": title,
             "required-experience": required_experience,
             "technologies": technologies,
+            "salary": salary.replace('$', '') if salary else None
         }
