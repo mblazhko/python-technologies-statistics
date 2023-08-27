@@ -70,12 +70,18 @@ class DjinniSpider(scrapy.Spider):
                 '.job-additional-info--body '
                 '.job-additional-info--item '
                 '.job-additional-info--item-text:contains("English")::text'
-                ).get().strip().split()[1]
+                ).get()
+        domain = response.css(
+                '.job-additional-info--body '
+                '.job-additional-info--item '
+                '.job-additional-info--item-text:contains("Domain")::text'
+                ).get()
 
         yield {
             "title": title,
             "required-experience": required_experience,
             "technologies": technologies,
             "salary": salary.replace('$', '') if salary else None,
-            "english-level": english_level if english_level else None
+            "english-level": english_level.strip().split()[1] if english_level else None,
+            "domain": domain.strip().split()[1] if domain else None
         }
